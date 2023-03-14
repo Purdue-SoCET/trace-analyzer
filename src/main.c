@@ -1,5 +1,8 @@
-#include "mpc.h"
+#include "parser.h"
 
 int main(void) {
-    return 0;
+    parser_t p = parser_init();
+
+    parser_deinit(&p);
+    return EXIT_SUCCESS;
 }

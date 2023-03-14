@@ -21,15 +21,19 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
-# Executables
-add_executable(trace_analyzer src/main.c)
+# Executable
+set(MAIN_SRCS src/main.c
+    src/parser.c)
+add_executable(trace_analyzer ${MAIN_SRCS})
 target_link_libraries(trace_analyzer mpc)
 
 # Tests
 enable_testing()
 
-add_executable(parser_test src/parser_test.cpp)
-target_link_libraries(parser_test GTest::gtest_main)
+set(TEST_SRCS src/parser_test.cpp
+    src/parser.c)
+add_executable(parser_test ${TEST_SRCS})
+target_link_libraries(parser_test GTest::gtest_main mpc)
 
 include(GoogleTest)
 gtest_discover_tests(parser_test)
