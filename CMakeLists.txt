@@ -8,6 +8,9 @@ set(CMAKE_CXX_STANDARD 14)
 include_directories(mpc)
 include_directories(${PROJECT_SOURCE_DIR})
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+# Used for valgrind support on asicfab
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -gdwarf-4")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -gdwarf-4")
 
 # Libraries
 # MPC - parsing combinator library

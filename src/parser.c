@@ -31,11 +31,10 @@ parser_t parser_init() {
     }
     /* clang-format on */
 
-    mpc_result_t r;
     return p;
 }
 
 void parser_deinit(parser_t *p) {
-    mpc_cleanup(6, p->trace_file, p->trace, p->core_num, p->address,
+    mpc_cleanup(7, p->trace_file, p->trace, p->core_num, p->address,
                 p->instruction, p->hex, p->disassembly);
 }
