@@ -22,7 +22,7 @@ parser_t parser_init() {
                     " core_num : \"core\" /[0-9]+/;"
                     " address : <hex>;"
                     " instruction : <hex>;"
-                    " hex : '0' ('x' | 'X') /[0-9a-fA-F]+/;"
+                    " hex : /0[xX][0-9a-fA-F]+/;"
                     " disassembly : /.*/ ;",
                     p.trace_file, p.trace, p.core_num, p.address, p.instruction, p.hex, p.disassembly, NULL))) {
         mpc_err_print(err);

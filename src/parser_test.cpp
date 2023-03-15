@@ -2,6 +2,7 @@ extern "C" {
 #include "parser.h"
 }
 #include <gtest/gtest.h>
+#include <stdio.h>
 
 TEST(ParserTest, TestTraceFile) {
     parser_t p = parser_init();
@@ -33,6 +34,14 @@ TEST(ParserTest, TestTrace) {
         "core          0: 0x0000000000008400 (0x00010117) auipc sp,      16",
         p.trace, &r);
     EXPECT_TRUE(parsed);
+    // TODO: flatten ast by removing unnecessary captures
+    EXPECT_STREQ(((mpc_ast_t *)r.output)->children[1]->children[1]->contents,
+                 "0");
+    EXPECT_STREQ(((mpc_ast_t *)r.output)->children[3]->contents,
+                 "0x0000000000008400");
+    EXPECT_STREQ(((mpc_ast_t *)r.output)->children[5]->contents, "0x00010117");
+    EXPECT_STREQ(((mpc_ast_t *)r.output)->children[7]->contents,
+                 "auipc sp,      16");
     parser_deinit(&p);
 }
 
@@ -41,6 +50,7 @@ TEST(ParserTest, TestCoreNum) {
     mpc_result_t r;
     int parsed = mpc_parse("trace", "core          0", p.core_num, &r);
     EXPECT_TRUE(parsed);
+    EXPECT_STREQ(((mpc_ast_t *)r.output)->children[1]->contents, "0");
     parser_deinit(&p);
 }
 
@@ -49,6 +59,7 @@ TEST(ParserTest, TestAddress) {
     mpc_result_t r;
     int parsed = mpc_parse("trace", "0x0000000000008400", p.address, &r);
     EXPECT_TRUE(parsed);
+    EXPECT_STREQ(((mpc_ast_t *)r.output)->contents, "0x0000000000008400");
     parser_deinit(&p);
 }
 
@@ -57,6 +68,7 @@ TEST(ParserTest, TestInstruction) {
     mpc_result_t r;
     int parsed = mpc_parse("trace", "0x00010117", p.instruction, &r);
     EXPECT_TRUE(parsed);
+    EXPECT_STREQ(((mpc_ast_t *)r.output)->contents, "0x00010117");
     parser_deinit(&p);
 }
 
@@ -65,8 +77,10 @@ TEST(ParserTest, TestHex) {
     mpc_result_t r;
     int parsed = mpc_parse("trace", "0x4343241afbc", p.hex, &r);
     EXPECT_TRUE(parsed);
+    EXPECT_STREQ(((mpc_ast_t *)r.output)->contents, "0x4343241afbc");
     parsed = mpc_parse("trace", "0X4234", p.hex, &r);
     EXPECT_TRUE(parsed);
+    EXPECT_STREQ(((mpc_ast_t *)r.output)->contents, "0X4234");
     parsed = mpc_parse("trace", "    ", p.hex, &r);
     EXPECT_FALSE(parsed);
     parsed = mpc_parse("trace", "0xy", p.hex, &r);
@@ -89,5 +103,6 @@ TEST(ParserTest, TestDisassembly) {
     mpc_result_t r;
     int parsed = mpc_parse("trace", "auipc sp,      16", p.disassembly, &r);
     EXPECT_TRUE(parsed);
+    EXPECT_STREQ(((mpc_ast_t *)r.output)->contents, "auipc sp,      16");
     parser_deinit(&p);
 }
