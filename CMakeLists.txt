@@ -15,15 +15,6 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -gdwarf-4")
 # Libraries
 # MPC - parsing combinator library
 add_library(mpc OBJECT mpc/mpc.c)
-# GTest - testing library
-include(FetchContent)
-# v1.13.0
-FetchContent_Declare(
-  googletest
-  URL https://github.com/google/googletest/archive/b796f7d44681514f58a683a3a71ff17c94edb0c1.zip
-)
-FetchContent_MakeAvailable(googletest)
-
 # Executable
 set(MAIN_SRCS src/main.c
     src/parser.c)
@@ -31,12 +22,23 @@ add_executable(trace_analyzer ${MAIN_SRCS})
 target_link_libraries(trace_analyzer mpc)
 
 # Tests
-enable_testing()
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    # GTest - testing library
+    include(FetchContent)
+    # v1.13.0
+    FetchContent_Declare(
+      googletest
+      URL https://github.com/google/googletest/archive/b796f7d44681514f58a683a3a71ff17c94edb0c1.zip
+    )
+    FetchContent_MakeAvailable(googletest)
 
-set(TEST_SRCS src/parser_test.cpp
-    src/parser.c)
-add_executable(parser_test ${TEST_SRCS})
-target_link_libraries(parser_test GTest::gtest_main mpc)
+    enable_testing()
 
-include(GoogleTest)
-gtest_discover_tests(parser_test)
+    set(TEST_SRCS src/parser_test.cpp
+        src/parser.c)
+    add_executable(parser_test ${TEST_SRCS})
+    target_link_libraries(parser_test GTest::gtest_main mpc)
+
+    include(GoogleTest)
+    gtest_discover_tests(parser_test)
+endif()
