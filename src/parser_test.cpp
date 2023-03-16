@@ -19,10 +19,26 @@ TEST(ParserTest, TestTraceFile) {
         "core          0: 0x000000000000c79a (0xd04080e7) jalr ra, ra,  -764\n"
         "core          0: 0x000000000000c49a (0x00800793) addi a5, zero,     8\n"
         "core          0: 0x000000000000c49c (0x30079073) csrrw zero, mstatus, a5\n"
-        "core          0: 0x000000000000c4a0 (0x00000797) auipc a5,       0\n",
+        "core          0: 0x000000000000c4a0 (0x00000797) auipc a5,       0",
         // clang-format on
         p.trace_file, &r);
     EXPECT_TRUE(parsed);
+    EXPECT_STREQ(((mpc_ast_t *)r.output)
+                     ->children[0]
+                     ->children[0]
+                     ->children[1]
+                     ->contents,
+                 "0");
+    EXPECT_STREQ(
+        ((mpc_ast_t *)r.output)->children[0]->children[ADDRESS_IDX]->contents,
+        "0x0000000000008400");
+    EXPECT_STREQ(((mpc_ast_t *)r.output)
+                     ->children[0]
+                     ->children[INSTRUCTION_IDX]
+                     ->contents,
+                 "0x00010117");
+    EXPECT_STREQ(((mpc_ast_t *)r.output)->children[0]->children[6]->contents,
+                 "auipc sp,      16");
     parser_deinit(&p);
 }
 
@@ -35,13 +51,15 @@ TEST(ParserTest, TestTrace) {
         p.trace, &r);
     EXPECT_TRUE(parsed);
     // TODO: flatten ast by removing unnecessary captures
-    EXPECT_STREQ(((mpc_ast_t *)r.output)->children[1]->children[1]->contents,
+    EXPECT_STREQ(((mpc_ast_t *)r.output)->children[0]->children[1]->contents,
                  "0");
-    EXPECT_STREQ(((mpc_ast_t *)r.output)->children[3]->contents,
+    EXPECT_STREQ(((mpc_ast_t *)r.output)->children[ADDRESS_IDX]->contents,
                  "0x0000000000008400");
-    EXPECT_STREQ(((mpc_ast_t *)r.output)->children[5]->contents, "0x00010117");
-    EXPECT_STREQ(((mpc_ast_t *)r.output)->children[7]->contents,
+    EXPECT_STREQ(((mpc_ast_t *)r.output)->children[INSTRUCTION_IDX]->contents,
+                 "0x00010117");
+    EXPECT_STREQ(((mpc_ast_t *)r.output)->children[6]->contents,
                  "auipc sp,      16");
+
     parser_deinit(&p);
 }
 

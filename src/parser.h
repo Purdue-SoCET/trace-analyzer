@@ -4,6 +4,9 @@
 #include "mpc.h"
 #include <stdbool.h>
 
+#define ADDRESS_IDX 2
+#define INSTRUCTION_IDX 4
+
 typedef struct {
     mpc_parser_t *trace_file;
     mpc_parser_t *trace;

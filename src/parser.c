@@ -18,7 +18,7 @@ parser_t parser_init() {
     mpc_err_t *err;
     if ((err = mpca_lang(MPCA_LANG_DEFAULT,
                     " trace_file : <trace>*;"
-                    " trace : /^/<core_num> ':' <address> '(' <instruction> ')' <disassembly> /$/;"
+                    " trace : <core_num> ':' <address> '(' <instruction> ')' <disassembly>;"
                     " core_num : \"core\" /[0-9]+/;"
                     " address : <hex>;"
                     " instruction : <hex>;"
