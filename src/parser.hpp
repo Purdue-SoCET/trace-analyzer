@@ -1,7 +1,9 @@
-#ifndef PARSER_H
-#define PARSER_H
+#ifndef PARSER_HPP
+#define PARSER_HPP
 
+extern "C" {
 #include "mpc.h"
+}
 #include <stdbool.h>
 
 #define ADDRESS_IDX 2

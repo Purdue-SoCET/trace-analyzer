@@ -1,4 +1,4 @@
-#include "parser.h"
+#include "parser.hpp"
 #include <unistd.h>
 
 int main(int argc, const char **argv) {
@@ -30,7 +30,7 @@ int main(int argc, const char **argv) {
         for (int i = 0; i < ast->children_num; i++) {
             mpc_ast_print(ast->children[i]->children[INSTRUCTION_IDX]);
         }
-        mpc_ast_delete(r.output);
+        mpc_ast_delete((mpc_ast_t *)r.output);
     } else {
         printf("Could not parse file %s: %s", file, mpc_err_string(r.error));
         mpc_err_delete(r.error);

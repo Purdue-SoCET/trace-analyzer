@@ -1,6 +1,4 @@
-extern "C" {
-#include "parser.h"
-}
+#include "parser.hpp"
 #include <gtest/gtest.h>
 #include <stdio.h>
 

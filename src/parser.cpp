@@ -1,4 +1,4 @@
-#include "parser.h"
+#include "parser.hpp"
 // General format of instruction trace:
 //    <core number>          <address> (<instruction>) <disassembly>
 // core          0: 0x0000000000008400 (0x00010117) auipc sp,      16
