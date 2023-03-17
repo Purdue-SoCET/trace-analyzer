@@ -9,7 +9,7 @@ extern "C" {
 #define ADDRESS_IDX 2
 #define INSTRUCTION_IDX 4
 
-typedef struct {
+typedef struct parser_t {
     mpc_parser_t *trace_file;
     mpc_parser_t *trace;
     mpc_parser_t *core_num;
@@ -17,9 +17,9 @@ typedef struct {
     mpc_parser_t *instruction;
     mpc_parser_t *hex;
     mpc_parser_t *disassembly;
-} parser_t;
 
-parser_t parser_init();
-void parser_deinit(parser_t *);
+    parser_t();
+    ~parser_t();
+} parser_t;
 
 #endif

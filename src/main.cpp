@@ -20,7 +20,7 @@ int main(int argc, const char **argv) {
         printf("Could not open file %s!\n", file);
         return EXIT_FAILURE;
     }
-    parser_t p = parser_init();
+    parser_t p = parser_t();
 
     mpc_result_t r;
     // TODO: Extremely slow. Can probably multithread this
@@ -36,6 +36,5 @@ int main(int argc, const char **argv) {
         mpc_err_delete(r.error);
     }
 
-    parser_deinit(&p);
     return EXIT_SUCCESS;
 }
