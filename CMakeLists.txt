@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.0)
 project(trace_analyzer)
 
-# For GTest
-set(CMAKE_CXX_STANDARD 14)
+# Necessary for parallelization
+set(CMAKE_CXX_STANDARD 17)
 
 # Include dirs and clangd support
 include_directories(${PROJECT_SOURCE_DIR})
@@ -10,16 +10,32 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Used for valgrind support on asicfab
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -gdwarf-4")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -gdwarf-4")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -fno-exceptions")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fno-exceptions")
+
+# Sources
+set(SRCS src/parser.cpp src/analyzer.cpp)
+set(MAIN_SRCS src/main.cpp ${SRCS})
+set(TEST_SRCS src/parser_test.cpp src/analyzer_test.cpp ${SRCS})
 
 # Libraries
 # MPC - parsing combinator library
 include_directories(mpc)
 add_library(mpc OBJECT mpc/mpc.c)
+# LLVM - used to disassemble instructions
+find_package(LLVM REQUIRED CONFIG)
+include_directories(${LLVM_INCLUDE_DIRS})
+separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
+add_definitions(${LLVM_DEFINITIONS_LIST})
+llvm_map_components_to_libnames(llvm_libs Support Target RISCVAsmParser RISCVCodeGen RISCVDesc RISCVDisassembler RISCVInfo MC)
+# TBB - threading will need to be compiled from source on asicfab (https://github.com/oneapi-src/oneTBB)
+find_package(TBB)
+
+set(SRC_LIBRARIES mpc TBB::tbb ${llvm_libs})
+
 # Executable
-set(MAIN_SRCS src/main.cpp
-    src/parser.cpp)
 add_executable(trace_analyzer ${MAIN_SRCS})
-target_link_libraries(trace_analyzer mpc)
+target_link_libraries(trace_analyzer ${SRC_LIBRARIES})
 
 # Tests
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -34,10 +50,8 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
     enable_testing()
 
-    set(TEST_SRCS src/parser_test.cpp
-        src/parser.cpp)
     add_executable(parser_test ${TEST_SRCS})
-    target_link_libraries(parser_test GTest::gtest_main mpc)
+    target_link_libraries(parser_test ${SRC_LIBRARIES} GTest::gtest_main)
 
     include(GoogleTest)
     gtest_discover_tests(parser_test)

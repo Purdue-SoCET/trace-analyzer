@@ -1,6 +1,5 @@
 #include "parser.hpp"
 #include <gtest/gtest.h>
-#include <stdio.h>
 
 TEST(ParserTest, TestTraceFile) {
     parser_t p = parser_t();
