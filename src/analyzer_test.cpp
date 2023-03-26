@@ -30,7 +30,6 @@ TEST(AnalyzerTest, TestAnalyze) {
         pcs.push_back(ast->children[i]->children[ADDRESS_IDX]->contents);
     }
 
-    Analyzer analyzer(10);
-    analyzer.add_instrs(instrs, pcs);
+    Analyzer analyzer(instrs, pcs);
     EXPECT_TRUE(analyzer.analyze());
 }

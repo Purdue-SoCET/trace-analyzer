@@ -10,30 +10,23 @@
 #include <llvm/MC/TargetRegistry.h>
 #include <llvm/Support/TargetSelect.h>
 
-Analyzer::Analyzer(uint32_t n) {
+Analyzer::Analyzer(std::vector<std::string> instrs,
+                   std::vector<std::string> pcs) {
+    assert(instrs.size() == pcs.size());
+    auto n = instrs.size();
     this->instructions.reserve(n);
     this->disassembly.reserve(n);
-}
 
-void Analyzer::add_instrs(std::vector<std::string> instr,
-                          std::vector<std::string> pc) {
-    assert(instr.size() == pc.size());
-    std::vector<uint32_t> instrs{};
-    instrs.reserve(instr.size());
-    for (auto hex : instr) {
-        instrs.push_back(std::stoul(hex, nullptr, 16));
-    }
-    std::vector<uint32_t> pcs{};
-    pcs.reserve(pcs.size());
-    for (auto pc : pc) {
-        pcs.push_back(std::stoul(pc, nullptr, 16));
-    }
-
-    for (uintptr_t i = 0; i < instr.size(); i++) {
+    // Add instructions to internal storage
+    for (uintptr_t i = 0; i < instrs.size(); i++) {
+        uint32_t instr = std::stoul(instrs[i], nullptr, 16);
+        uint32_t curr_pc = std::stoul(pcs[i], nullptr, 16);
+        uint32_t next_pc =
+            i == (instrs.size() - 1) ? 0 : std::stoul(pcs[i + 1], nullptr, 16);
         Instruction I;
-        I.hex = instrs[i];
-        I.pc = pcs[i];
-        I.size = i == (instrs.size() - 1) ? 4 : pcs[i + 1] - pcs[i];
+        I.hex = instr;
+        I.pc = curr_pc;
+        I.size = i == (instrs.size() - 1) ? 4 : next_pc - curr_pc;
         this->instructions.push_back(I);
     }
 

@@ -28,14 +28,14 @@ int main(int argc, const char **argv) {
     // Read line by line then use p.trace
     if (mpc_parse_contents(file, p.trace_file, &r)) {
         mpc_ast_t *ast = (mpc_ast_t *)r.output;
-        Analyzer analyzer(ast->children_num);
+        std::vector<std::string> instrs;
+        std::vector<std::string> pcs;
         for (int i = 0; i < ast->children_num; i++) {
-            /*analyzer.add_instr_hex(
+            instrs.push_back(
                 ast->children[i]->children[INSTRUCTION_IDX]->contents);
-            analyzer.add_instr_pc(
-                ast->children[i]->children[ADDRESS_IDX]->contents);*/
-            mpc_ast_print(ast->children[i]->children[INSTRUCTION_IDX]);
+            pcs.push_back(ast->children[i]->children[ADDRESS_IDX]->contents);
         }
+        Analyzer analyzer(instrs, pcs);
         analyzer.analyze();
         mpc_ast_delete((mpc_ast_t *)r.output);
     } else {

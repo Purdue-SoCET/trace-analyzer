@@ -16,16 +16,12 @@ class Analyzer {
   public:
     std::vector<llvm::MCInst> disassembly;
 
+    // Initialize an analyzer with a set of instructions and PC values
     // int: initial capacity of members, defaults to 0
-    Analyzer(uint32_t = 0);
-    // Adds a list of instructions with their pcs to Analyzer's internal list of
-    // instructions and PCs. Performs any necesary conversion to match internal
-    // representation.
-    // std::vector<std::string> instr: instruction hex to be
-    // added to internal list of instructions std::vector<std::string> pc: pc
-    // hex to be added to internal list of pcs
-    void add_instrs(std::vector<std::string> instr,
-                    std::vector<std::string> pc);
+    // std::vector<std::string> instr: instruction hex to be added to internal
+    // list of instructions
+    // std::vector<std::string> pc: pc hex to be added to internal list of pcs
+    Analyzer(std::vector<std::string> instr, std::vector<std::string> pc);
     // Analyze all instructions
     bool analyze();
     ~Analyzer() = default;
