@@ -1,8 +1,34 @@
 #include "analyzer.hpp"
 #include "parser.hpp"
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
 TEST(AnalyzerTest, TestAnalyze) {
+    // TODO: support extensions
+    // clang-format off
+    std::string trace =
+        "core          0: 0x0000000000008400 (0x00010117) auipc sp,      16\n"
+        "core          0: 0x0000000000008404 (0x00010113) addi sp, sp,     0\n"
+        "core          0: 0x0000000000008408 (0x38a040ef) jal ra, pc +    17290\n";
+    // clang-format on
+    parser_t p = parser_t();
+    mpc_result_t r;
+    EXPECT_TRUE(mpc_parse("input", trace.c_str(), p.trace_file, &r));
+    mpc_ast_t *ast = (mpc_ast_t *)r.output;
+
+    std::vector<std::string> instrs;
+    instrs.reserve(ast->children_num);
+    std::vector<std::string> pcs;
+    pcs.reserve(ast->children_num);
+    for (int i = 0; i < ast->children_num; i++) {
+        instrs.push_back(ast->children[i]->children[INSTRUCTION_IDX]->contents);
+        pcs.push_back(ast->children[i]->children[ADDRESS_IDX]->contents);
+    }
+
+    Analyzer analyzer(instrs, pcs, CMAKE_TXT_DIR "/tests/nsichneu");
+    EXPECT_TRUE(analyzer.analyze());
+}
+
+TEST(AnalyzerTest, TestInvalidBinary) {
     // clang-format off
     std::string trace =
         "core          0: 0x0000000000008400 (0x00010117) auipc sp,      16\n"
@@ -30,6 +56,5 @@ TEST(AnalyzerTest, TestAnalyze) {
         pcs.push_back(ast->children[i]->children[ADDRESS_IDX]->contents);
     }
 
-    Analyzer analyzer(instrs, pcs);
-    EXPECT_TRUE(analyzer.analyze());
+    EXPECT_DEATH(Analyzer(instrs, pcs, "not a real file"), "Failed to create");
 }

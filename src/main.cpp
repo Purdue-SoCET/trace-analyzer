@@ -15,10 +15,11 @@ int main(int argc, const char **argv) {
         return EXIT_FAILURE;
     }
 
-    const char *file = argv[1];
+    const char *trace_file = argv[1];
+    const char *binary_file = argv[2];
     // Check that file exists
-    if (access(file, R_OK)) {
-        printf("Could not open file %s!\n", file);
+    if (access(trace_file, R_OK)) {
+        printf("Could not open file %s!\n", trace_file);
         return EXIT_FAILURE;
     }
     parser_t p = parser_t();
@@ -26,7 +27,7 @@ int main(int argc, const char **argv) {
     mpc_result_t r;
     // TODO: Extremely slow. Can probably multithread this
     // Read line by line then use p.trace
-    if (mpc_parse_contents(file, p.trace_file, &r)) {
+    if (mpc_parse_contents(trace_file, p.trace_file, &r)) {
         mpc_ast_t *ast = (mpc_ast_t *)r.output;
         std::vector<std::string> instrs;
         std::vector<std::string> pcs;
@@ -35,11 +36,12 @@ int main(int argc, const char **argv) {
                 ast->children[i]->children[INSTRUCTION_IDX]->contents);
             pcs.push_back(ast->children[i]->children[ADDRESS_IDX]->contents);
         }
-        Analyzer analyzer(instrs, pcs);
+        Analyzer analyzer(instrs, pcs, binary_file);
         analyzer.analyze();
         mpc_ast_delete((mpc_ast_t *)r.output);
     } else {
-        printf("Could not parse file %s: %s", file, mpc_err_string(r.error));
+        printf("Could not parse file %s: %s", trace_file,
+               mpc_err_string(r.error));
         mpc_err_delete(r.error);
     }
 

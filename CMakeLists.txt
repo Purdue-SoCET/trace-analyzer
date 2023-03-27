@@ -11,10 +11,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -gdwarf-4")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -gdwarf-4")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -fno-exceptions")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fno-exceptions")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fno-exceptions -fno-rtti")
 
 # Sources
-set(SRCS src/parser.cpp src/analyzer.cpp)
+set(SRCS src/parser.cpp src/analyzer.cpp src/ObjBuffer.cpp)
 set(MAIN_SRCS src/main.cpp ${SRCS})
 set(TEST_SRCS src/parser_test.cpp src/analyzer_test.cpp ${SRCS})
 
@@ -27,7 +27,7 @@ find_package(LLVM REQUIRED CONFIG)
 include_directories(${LLVM_INCLUDE_DIRS})
 separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
 add_definitions(${LLVM_DEFINITIONS_LIST})
-llvm_map_components_to_libnames(llvm_libs Support Target RISCVAsmParser RISCVCodeGen RISCVDesc RISCVDisassembler RISCVInfo MC)
+llvm_map_components_to_libnames(llvm_libs Support Target RISCVAsmParser RISCVCodeGen RISCVDesc RISCVDisassembler RISCVInfo MC Object)
 # TBB - threading will need to be compiled from source on asicfab (https://github.com/oneapi-src/oneTBB)
 find_package(TBB)
 
@@ -47,6 +47,8 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
       URL https://github.com/google/googletest/archive/b796f7d44681514f58a683a3a71ff17c94edb0c1.zip
     )
     FetchContent_MakeAvailable(googletest)
+
+    add_compile_definitions(CMAKE_TXT_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 
     enable_testing()
 
