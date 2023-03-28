@@ -1,13 +1,13 @@
 #include "analyzer.hpp"
-#include <algorithm>
-#include <execution>
-#include <fstream>
-#include <iostream>
+#include <llvm/MC/MCAsmInfo.h>
 #include <llvm/MC/MCContext.h>
 #include <llvm/MC/MCDisassembler/MCDisassembler.h>
 #include <llvm/MC/MCInstrDesc.h>
 #include <llvm/MC/MCInstrInfo.h>
+#include <llvm/MC/MCRegisterInfo.h>
 #include <llvm/MC/MCSubtargetInfo.h>
+#include <llvm/MC/MCTargetOptions.h>
+#include <llvm/MC/SubtargetFeature.h>
 #include <llvm/MC/TargetRegistry.h>
 #include <llvm/Support/TargetSelect.h>
 
@@ -46,29 +46,39 @@ bool Analyzer::analyze() {
         fprintf(stderr, "Failed to create target: %s\n", error.c_str());
         return false;
     }
+    // TODO: make this more robust
+    llvm::SubtargetFeatures stf;
+    for (auto F : std::string("mvc")) {
+        stf.AddFeature(llvm::StringRef(&F, 1));
+    }
     std::unique_ptr<llvm::MCSubtargetInfo> sti(
-        target->createMCSubtargetInfo(triple.getTriple(), "", ""));
-    llvm::MCContext ctx(triple, nullptr, nullptr, nullptr);
-    const llvm::MCDisassembler *disasm =
-        target->createMCDisassembler(*sti, ctx);
+        target->createMCSubtargetInfo(triple.getTriple(), "", stf.getString()));
+    std::unique_ptr<llvm::MCRegisterInfo> mri(
+        target->createMCRegInfo(triple.getTriple()));
+    std::unique_ptr<llvm::MCAsmInfo> mai(target->createMCAsmInfo(
+        *mri, triple.getTriple(), llvm::MCTargetOptions()));
+    llvm::MCContext ctx(triple, mai.get(), mri.get(), sti.get());
+    std::unique_ptr<llvm::MCDisassembler> disasm(
+        target->createMCDisassembler(*sti, ctx));
+
     auto bytes = static_cast<llvm::ArrayRef<uint8_t>>(this->Obj);
     for (auto I : this->instructions) {
         uint32_t pc = I.pc;
-        llvm::MCInst instr;
+        llvm::MCInst Inst;
         uint64_t size = 0;
-        switch (disasm->getInstruction(instr, size, bytes.slice(pc, 4), pc,
+        switch (disasm->getInstruction(Inst, size, bytes.slice(pc, 4), pc,
                                        llvm::nulls())) {
         case llvm::MCDisassembler::SoftFail:
         case llvm::MCDisassembler::Fail:
             fprintf(stderr, "MCDisassembler failed!\n");
             return false;
         case llvm::MCDisassembler::Success:
-            this->disassembly.push_back(instr);
+            this->disassembly.push_back(Inst);
             break;
         }
     }
 
-    llvm::MCInstrInfo *info = target->createMCInstrInfo();
+    std::unique_ptr<llvm::MCInstrInfo> info(target->createMCInstrInfo());
     for (auto I : this->disassembly) {
         llvm::MCInstrDesc desc = info->get(I.getOpcode());
         (void)desc;
