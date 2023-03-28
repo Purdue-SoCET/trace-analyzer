@@ -7,7 +7,7 @@
 #include <vector>
 
 class Analyzer {
-    typedef struct Instruction {
+    typedef struct {
         uint32_t hex;
         uint32_t pc;
     } Instruction;

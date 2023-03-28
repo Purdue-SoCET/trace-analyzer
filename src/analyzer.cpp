@@ -28,16 +28,16 @@ Analyzer::Analyzer(std::vector<std::string> instrs,
         I.pc = curr_pc - starting_addr;
         instructions.push_back(I);
     }
-}
 
-bool Analyzer::analyze() {
     LLVMInitializeRISCVTarget();
     LLVMInitializeRISCVTargetInfo();
     LLVMInitializeRISCVTargetMC();
     LLVMInitializeRISCVAsmParser();
     LLVMInitializeRISCVAsmPrinter();
     LLVMInitializeRISCVDisassembler();
+}
 
+bool Analyzer::analyze() {
     llvm::Triple triple = this->Obj.getTriple();
     std::string error;
     const llvm::Target *target =
@@ -46,6 +46,8 @@ bool Analyzer::analyze() {
         fprintf(stderr, "Failed to create target: %s\n", error.c_str());
         return false;
     }
+
+    // Set up LLVM infrastructure for diassembly
     // TODO: make this more robust
     llvm::SubtargetFeatures stf;
     for (auto F : std::string("mvc")) {
@@ -61,6 +63,7 @@ bool Analyzer::analyze() {
     std::unique_ptr<llvm::MCDisassembler> disasm(
         target->createMCDisassembler(*sti, ctx));
 
+    // Disassemble by PC
     auto bytes = static_cast<llvm::ArrayRef<uint8_t>>(this->Obj);
     for (auto I : this->instructions) {
         uint32_t pc = I.pc;
