@@ -66,7 +66,8 @@ bool Analyzer::analyze() {
         uint32_t pc = I.pc;
         llvm::MCInst Inst;
         uint64_t size = 0;
-        switch (disasm->getInstruction(Inst, size, bytes.slice(pc, 4), pc,
+        auto len = (pc + 4 > bytes.size()) ? bytes.size() - pc : 4;
+        switch (disasm->getInstruction(Inst, size, bytes.slice(pc, len), pc,
                                        llvm::nulls())) {
         case llvm::MCDisassembler::SoftFail:
         case llvm::MCDisassembler::Fail:
