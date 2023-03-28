@@ -10,8 +10,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Used for valgrind support on asicfab
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -gdwarf-4")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -gdwarf-4")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -fno-exceptions")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fno-exceptions -fno-rtti")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
+# oneTBB requires exception support
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fno-rtti")
 
 # Sources
 set(SRCS src/parser.cpp src/analyzer.cpp src/ObjBuffer.cpp)
