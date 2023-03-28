@@ -16,6 +16,15 @@ class Analyzer {
 
   public:
     std::vector<llvm::MCInst> disassembly;
+    typedef struct {
+        std::size_t alu;
+        std::size_t mem;
+        std::size_t branch;
+        std::size_t call;
+        std::size_t muldiv;
+        std::size_t system;
+    } statistics;
+    statistics stats;
 
     // Initialize an analyzer with a set of instructions and PC values
     // int: initial capacity of members, defaults to 0
@@ -24,6 +33,8 @@ class Analyzer {
     // std::vector<std::string> pc: pc hex to be added to internal list of pcs
     Analyzer(std::vector<std::string> instr, std::vector<std::string> pc,
              const char *filename);
+    // Prints statistics as a table
+    void displayStatistics();
     // Analyze all instructions
     bool analyze();
     ~Analyzer() = default;

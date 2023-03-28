@@ -32,6 +32,12 @@ TEST(AnalyzerTest, TestAnalyze) {
 
     Analyzer analyzer(instrs, pcs, CMAKE_TXT_DIR "/tests/nsichneu");
     EXPECT_TRUE(analyzer.analyze());
+    EXPECT_EQ(analyzer.stats.alu, 6);
+    EXPECT_EQ(analyzer.stats.mem, 1);
+    EXPECT_EQ(analyzer.stats.branch, 0);
+    EXPECT_EQ(analyzer.stats.call, 2);
+    EXPECT_EQ(analyzer.stats.muldiv, 0);
+    EXPECT_EQ(analyzer.stats.system, 1);
 }
 
 TEST(AnalyzerTest, TestInvalidBinary) {

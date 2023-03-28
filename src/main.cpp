@@ -58,5 +58,7 @@ int main(int argc, const char **argv) {
     Analyzer analyzer(instrs, pcs, binary_file);
     analyzer.analyze();
 
+    analyzer.displayStatistics();
+
     return EXIT_SUCCESS;
 }

@@ -1,6 +1,14 @@
 cmake_minimum_required(VERSION 3.0)
 project(trace_analyzer)
 
+# Detecting $LLVM_BUILD_DIR which is necessary to include RISCVGenInstrInfo.inc which is not included in installations
+MESSAGE(STATUS "FINDING $LLVM_BUILD_DIR")
+if(DEFINED ENV{LLVM_BUILD_DIR})
+    include_directories($ENV{LLVM_BUILD_DIR})
+else()
+    MESSAGE(FATAL_ERROR "Failed to find $LLVM_BUILD_DIR. Please define this variable and run cmake again.")
+endif()
+
 # Necessary for parallelization
 set(CMAKE_CXX_STANDARD 17)
 
@@ -28,7 +36,7 @@ find_package(LLVM REQUIRED CONFIG)
 include_directories(${LLVM_INCLUDE_DIRS})
 separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
 add_definitions(${LLVM_DEFINITIONS_LIST})
-llvm_map_components_to_libnames(llvm_libs Support Target RISCVAsmParser RISCVCodeGen RISCVDesc RISCVDisassembler RISCVInfo MC Object)
+llvm_map_components_to_libnames(llvm_libs Support Target RISCV RISCVAsmParser RISCVCodeGen RISCVDesc RISCVDisassembler RISCVInfo MC Object)
 # TBB - threading will need to be compiled from source on asicfab (https://github.com/oneapi-src/oneTBB)
 find_package(TBB)
 
