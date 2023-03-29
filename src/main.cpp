@@ -1,4 +1,5 @@
 #include "analyzer.hpp"
+#include "cli.hpp"
 #include "parser.hpp"
 #include <execution>
 #include <fstream>
@@ -7,27 +8,15 @@
 #include <unistd.h>
 
 int main(int argc, const char **argv) {
-    if (argc < 2 || !strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
-        printf("usage: %s TRACE_FILE BINARY_FILE [options]\n\n"
-               "Options:\n"
-               // TODO: will this assume function only called once?
-               // Won't be deterministic (i.e. args different each time and we
-               // can't tell from only instruction traces)
-               "\t--function=<f>  Only analyze function <f> (NOT IMPLEMENTED)"
-               "\n",
-               argv[0]);
-        return EXIT_FAILURE;
-    }
+    Cli cli(argc, argv);
 
-    const char *trace_file = argv[1];
-    const char *binary_file = argv[2];
     // Check that file exists
-    if (access(trace_file, R_OK)) {
-        printf("Could not open file %s!\n", trace_file);
+    if (access(cli.trace_file, R_OK)) {
+        printf("Could not open file %s!\n", cli.trace_file);
         return EXIT_FAILURE;
     }
     parser_t p = parser_t();
-    std::ifstream trace_if(trace_file);
+    std::ifstream trace_if(cli.trace_file);
     std::string line;
     std::vector<std::string> lines;
     while (std::getline(trace_if, line)) {
@@ -55,10 +44,20 @@ int main(int argc, const char **argv) {
                 mpc_err_delete(r.error);
             }
         });
-    Analyzer analyzer(instrs, pcs, binary_file);
+    Analyzer analyzer(instrs, pcs, cli.binary_file);
     analyzer.analyze();
 
-    analyzer.displayStatistics();
+    switch (cli.format) {
+    case Cli::format_normal_e:
+        analyzer.displayStatistics();
+        break;
+    case Cli::format_json_e:
+        analyzer.displayStatisticsJson();
+        break;
+    case Cli::format_matlab_e:
+        analyzer.displayStatisticsMatlab();
+        break;
+    }
 
     return EXIT_SUCCESS;
 }

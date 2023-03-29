@@ -23,7 +23,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fno-rtti")
 
 # Sources
-set(SRCS src/parser.cpp src/analyzer.cpp src/ObjBuffer.cpp)
+set(SRCS src/parser.cpp src/analyzer.cpp src/ObjBuffer.cpp src/cli.cpp)
 set(MAIN_SRCS src/main.cpp ${SRCS})
 set(TEST_SRCS src/parser_test.cpp src/analyzer_test.cpp ${SRCS})
 
