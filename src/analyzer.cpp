@@ -239,8 +239,7 @@ void Analyzer::displayStatisticsJson() {
     auto call = this->stats.call;
     auto muldiv = this->stats.muldiv;
     auto system = this->stats.system;
-    auto total =
-        std::max<std::size_t>(1, alu + mem + branch + call + muldiv + system);
+    auto total = alu + mem + branch + call + muldiv + system;
     printf("{\n"
            "    \"count\": {\n"
            "        \"alu\": %lu,\n"
