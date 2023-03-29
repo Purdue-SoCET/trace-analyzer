@@ -231,3 +231,26 @@ void Analyzer::displayStatistics() {
            100 * branch / total, call, 100 * call / total, muldiv,
            100 * muldiv / total, system, 100 * system / total);
 }
+
+void Analyzer::displayStatisticsJson() {
+    auto alu = this->stats.alu;
+    auto mem = this->stats.mem;
+    auto branch = this->stats.branch;
+    auto call = this->stats.call;
+    auto muldiv = this->stats.muldiv;
+    auto system = this->stats.system;
+    auto total =
+        std::max<std::size_t>(1, alu + mem + branch + call + muldiv + system);
+    printf("{\n"
+           "    \"count\": {\n"
+           "        \"alu\": %lu,\n"
+           "        \"mem\": %lu,\n"
+           "        \"branch\": %lu,\n"
+           "        \"call\": %lu,\n"
+           "        \"muldiv\": %lu,\n"
+           "        \"system\": %lu\n"
+           "    }\n"
+           "    \"total\": %lu\n"
+           "}\n",
+           alu, mem, branch, call, muldiv, system, total);
+}

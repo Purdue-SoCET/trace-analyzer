@@ -35,6 +35,8 @@ class Analyzer {
              const char *filename);
     // Prints statistics as a table
     void displayStatistics();
+    // Prints statistics as a JSON object
+    void displayStatisticsJson();
     // Analyze all instructions
     bool analyze();
     ~Analyzer() = default;
