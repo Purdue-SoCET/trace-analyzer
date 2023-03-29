@@ -8,7 +8,7 @@
 
 int main(int argc, const char **argv) {
     if (argc < 2 || !strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
-        printf("usage: %s TRACE_FILE [options]\n\n"
+        printf("usage: %s TRACE_FILE BINARY_FILE [options]\n\n"
                "Options:\n"
                // TODO: will this assume function only called once?
                // Won't be deterministic (i.e. args different each time and we
