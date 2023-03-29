@@ -37,6 +37,8 @@ class Analyzer {
     void displayStatistics();
     // Prints statistics as a JSON object
     void displayStatisticsJson();
+    // Prints statistics as a MATLAB array
+    void displayStatisticsMatlab();
     // Analyze all instructions
     bool analyze();
     ~Analyzer() = default;

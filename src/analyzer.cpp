@@ -253,3 +253,18 @@ void Analyzer::displayStatisticsJson() {
            "}\n",
            alu, mem, branch, call, muldiv, system, total);
 }
+
+void Analyzer::displayStatisticsMatlab() {
+    auto alu = this->stats.alu;
+    auto mem = this->stats.mem;
+    auto branch = this->stats.branch;
+    auto call = this->stats.call;
+    auto muldiv = this->stats.muldiv;
+    auto system = this->stats.system;
+    auto total = alu + mem + branch + call + muldiv + system;
+    printf(
+        "instr_count = [%lu, %lu, %lu, %lu, %lu, %lu];\n"
+        "instr_labels = {'alu', 'mem', 'branch', 'call', 'muldiv', 'system'};\n"
+        "total = %lu;\n",
+        alu, mem, branch, call, muldiv, system, total);
+}
