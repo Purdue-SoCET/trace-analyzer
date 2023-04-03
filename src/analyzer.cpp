@@ -248,7 +248,7 @@ void Analyzer::displayStatisticsJson() {
            "        \"call\": %lu,\n"
            "        \"muldiv\": %lu,\n"
            "        \"system\": %lu\n"
-           "    }\n"
+           "    },\n"
            "    \"total\": %lu\n"
            "}\n",
            alu, mem, branch, call, muldiv, system, total);
