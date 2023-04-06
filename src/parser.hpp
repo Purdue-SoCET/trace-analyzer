@@ -9,6 +9,9 @@ extern "C" {
 #define ADDRESS_IDX 2
 #define INSTRUCTION_IDX 4
 
+/*
+ * Parser object to maintain handles for each subparser.
+ */
 typedef struct parser_t {
     mpc_parser_t *trace_file;
     mpc_parser_t *trace;
