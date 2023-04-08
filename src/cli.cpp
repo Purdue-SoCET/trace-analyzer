@@ -34,7 +34,7 @@ Cli::Cli(int argc, const char **argv)
                // TODO: will this assume function only called once?
                // Won't be deterministic (i.e. args different each time and we
                // can't tell from only instruction traces)
-               "\t--format=<format>  Display statistics in <format> where format is one of \"normal\", \"json\", or \"matlab\". Defaults to \"normal\".\n"
+               "\t--format=<format>  Display statistics in <format> where format is one of \"normal\", \"json\", \"matlab\", or \"extension\". Defaults to \"normal\".\n"
                "\t--function=<f>  Only analyze function <f> (NOT IMPLEMENTED)\n",
                argv[0]);
         // clang-format on

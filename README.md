@@ -36,7 +36,7 @@ CC=gcc CXX=g++ cmake ...
 The trace analyzer binary has a simple CLI to determine how to output the data that it generates. The syntax can be seen below:
 
 ```sh
-./trace_analyzer <trace log> <binary file> [--format=<normal,json,matlab>]
+./trace_analyzer <trace log> <binary file> [--format=<normal,json,matlab,extension>]
 ```
 
 Note that `<binary file>` refers to the ELF file which has not been dumped into a raw hex file yet.
@@ -78,4 +78,16 @@ The MATLAB output is a style which formats the data as a number of MATLAB variab
 instr_count = [3261, 1231363, 770303, 1470, 30, 6];
 instr_labels = {'alu', 'mem', 'branch', 'call', 'muldiv', 'system'};
 total = 2006433;
+```
+
+The extension format displays the instruction trace based on its ISA/extension of origin.
+
+```
+Extension Statistics
+===========================
+Type          Count       %
+===========================
+rv32i:      2004125  99.88%
+rv32m:           30   0.00%
+rv32c:         2278   0.11%
 ```
