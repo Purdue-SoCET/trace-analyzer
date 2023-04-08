@@ -25,10 +25,10 @@ Analyzer::Analyzer(std::vector<std::string> instrs,
     for (uintptr_t i = 0; i < instrs.size(); i++) {
         uint32_t instr = std::stoul(instrs[i], nullptr, 16);
         uint32_t curr_pc = std::stoul(pcs[i], nullptr, 16);
-        Instruction I;
+        Trace I;
         I.hex = instr;
         I.pc = curr_pc - starting_addr;
-        instructions.push_back(I);
+        traces.push_back(I);
     }
 
     LLVMInitializeRISCVTarget();
@@ -67,7 +67,7 @@ bool Analyzer::analyze() {
 
     // Disassemble by PC
     auto bytes = static_cast<llvm::ArrayRef<uint8_t>>(this->Obj);
-    for (auto I : this->instructions) {
+    for (auto I : this->traces) {
         uint32_t pc = I.pc;
         llvm::MCInst Inst;
         uint64_t size = 0;
@@ -110,6 +110,9 @@ bool Analyzer::analyze() {
         case llvm::RISCV::SRA:
         case llvm::RISCV::OR:
         case llvm::RISCV::AND:
+            this->stats.rv32i++;
+            this->stats.alu++;
+            break;
         // RV32C ALU
         case llvm::RISCV::C_ADDI4SPN:
         case llvm::RISCV::C_ADDI:
@@ -126,6 +129,7 @@ bool Analyzer::analyze() {
         case llvm::RISCV::C_SLLI:
         case llvm::RISCV::C_MV:
         case llvm::RISCV::C_ADD:
+            this->stats.rv32c++;
             this->stats.alu++;
             break;
         // RV32M Multiply Divide
@@ -137,6 +141,7 @@ bool Analyzer::analyze() {
         case llvm::RISCV::DIVU:
         case llvm::RISCV::REM:
         case llvm::RISCV::REMU:
+            this->stats.rv32m++;
             this->stats.muldiv++;
             break;
         // RV32I Branch
@@ -146,18 +151,27 @@ bool Analyzer::analyze() {
         case llvm::RISCV::BGE:
         case llvm::RISCV::BLTU:
         case llvm::RISCV::BGEU:
+            this->stats.rv32i++;
+            this->stats.branch++;
+            break;
         // RV32C Branch
         case llvm::RISCV::C_BEQZ:
         case llvm::RISCV::C_BNEZ:
+            this->stats.rv32c++;
             this->stats.branch++;
             break;
         // RV32I Call
         case llvm::RISCV::JAL:
         case llvm::RISCV::JALR:
+            this->stats.rv32i++;
+            this->stats.call++;
+            break;
+        // RV32C Call
         case llvm::RISCV::C_JAL:
         case llvm::RISCV::C_JALR:
         case llvm::RISCV::C_J:
         case llvm::RISCV::C_JR:
+            this->stats.rv32c++;
             this->stats.call++;
             break;
         // RV32I Mem
@@ -170,11 +184,15 @@ bool Analyzer::analyze() {
         case llvm::RISCV::SB:
         case llvm::RISCV::SH:
         case llvm::RISCV::SW:
+            this->stats.rv32i++;
+            this->stats.mem++;
+            break;
         // RV32C Mem
         case llvm::RISCV::C_LW:
         case llvm::RISCV::C_SW:
         case llvm::RISCV::C_LWSP:
         case llvm::RISCV::C_SWSP:
+            this->stats.rv32c++;
             this->stats.mem++;
             break;
         // RV32I System
@@ -193,9 +211,13 @@ bool Analyzer::analyze() {
         case llvm::RISCV::MRET:
         case llvm::RISCV::WFI:
         case llvm::RISCV::SFENCE_VMA:
+            this->stats.rv32i++;
+            this->stats.system++;
+            break;
         // RV32C System
         case llvm::RISCV::C_NOP:
         case llvm::RISCV::C_EBREAK:
+            this->stats.rv32c++;
             this->stats.system++;
             break;
         default:
@@ -267,4 +289,20 @@ void Analyzer::displayStatisticsMatlab() {
         "instr_labels = {'alu', 'mem', 'branch', 'call', 'muldiv', 'system'};\n"
         "total = %lu;\n",
         alu, mem, branch, call, muldiv, system, total);
+}
+
+void Analyzer::displayExtension() {
+    auto rv32i = this->stats.rv32i;
+    auto rv32m = this->stats.rv32m;
+    auto rv32c = this->stats.rv32c;
+    float total = std::max<std::size_t>(1, rv32i + rv32m + rv32c);
+    printf("Extension Statistics\n"
+           "===========================\n"
+           "Type          Count       %%\n"
+           "===========================\n"
+           "rv32i: %12lu  %5.2f%%\n"
+           "rv32m: %12lu  %5.2f%%\n"
+           "rv32c: %12lu  %5.2f%%\n",
+           rv32i, 100 * rv32i / total, rv32m, 100 * rv32m / total, rv32c,
+           100 * rv32c / total);
 }

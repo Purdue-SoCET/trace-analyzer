@@ -14,8 +14,8 @@ class Analyzer {
     typedef struct {
         uint32_t hex;
         uint32_t pc;
-    } Instruction;
-    std::vector<Instruction> instructions;
+    } Trace;
+    std::vector<Trace> traces;
     ObjBuffer Obj;
 
   public:
@@ -27,6 +27,9 @@ class Analyzer {
         std::size_t call;
         std::size_t muldiv;
         std::size_t system;
+        std::size_t rv32i;
+        std::size_t rv32m;
+        std::size_t rv32c;
     } statistics;
     statistics stats;
 
@@ -41,6 +44,8 @@ class Analyzer {
     void displayStatisticsJson();
     // Prints statistics as a MATLAB array
     void displayStatisticsMatlab();
+    // Prints information about the extension of each instruction
+    void displayExtension();
     // Analyze all instructions
     bool analyze();
     ~Analyzer() = default;

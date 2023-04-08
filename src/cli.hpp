@@ -11,6 +11,7 @@ class Cli {
         format_normal_e,
         format_json_e,
         format_matlab_e,
+        format_ext_e,
     } format_e;
 
     // Path to the trace log

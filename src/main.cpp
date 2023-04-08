@@ -57,6 +57,9 @@ int main(int argc, const char **argv) {
     case Cli::format_matlab_e:
         analyzer.displayStatisticsMatlab();
         break;
+    case Cli::format_ext_e:
+        analyzer.displayExtension();
+        break;
     }
 
     return EXIT_SUCCESS;

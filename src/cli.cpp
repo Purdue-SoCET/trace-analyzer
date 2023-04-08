@@ -17,6 +17,8 @@ Cli::Cli(int argc, const char **argv)
                 format = format_json_e;
             } else if (strcmp(argv[i] + 9, "matlab") == 0) {
                 format = format_matlab_e;
+            } else if (strcmp(argv[i] + 9, "extension") == 0) {
+                format = format_ext_e;
             } else {
                 printf("Unknown format \"%s\", please use one of \"normal\", "
                        "\"json\", or \"matlab\".\n",
