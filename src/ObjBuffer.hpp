@@ -5,9 +5,9 @@
 #include <llvm/Object/ObjectFile.h>
 
 /*
- * Class to provide abstractions and utilities for working with the binary file. Maintains ownership
- * of the internal LLVM representation of an object file. Provides informations about the .text
- * section of the program.
+ * Class to provide abstractions and utilities for working with the binary file.
+ * Maintains ownership of the internal LLVM representation of an object file.
+ * Provides informations about the .text section of the program.
  */
 using llvm::object::ELF32LEFile;
 class ObjBuffer {

@@ -4,9 +4,9 @@
 TEST(ParserTest, TestTraceFile) {
     parser_t p = parser_t();
     mpc_result_t r;
-    int parsed = mpc_parse(
-        "trace",
-        // clang-format off
+    int parsed =
+        mpc_parse("trace",
+                  // clang-format off
         "core          0: 0x0000000000008400 (0x00010117) auipc sp,      16\n"
         "core          0: 0x0000000000008404 (0x00010113) addi sp, sp,     0\n"
         "core          0: 0x0000000000008408 (0x38a040ef) jal ra, pc +    17290\n"
@@ -17,44 +17,28 @@ TEST(ParserTest, TestTraceFile) {
         "core          0: 0x000000000000c49a (0x00800793) addi a5, zero,     8\n"
         "core          0: 0x000000000000c49c (0x30079073) csrrw zero, mstatus, a5\n"
         "core          0: 0x000000000000c4a0 (0x00000797) auipc a5,       0",
-        // clang-format on
-        p.trace_file, &r);
+                  // clang-format on
+                  p.trace_file, &r);
     EXPECT_TRUE(parsed);
-    EXPECT_STREQ(((mpc_ast_t *)r.output)
-                     ->children[0]
-                     ->children[0]
-                     ->children[1]
-                     ->contents,
-                 "0");
-    EXPECT_STREQ(
-        ((mpc_ast_t *)r.output)->children[0]->children[ADDRESS_IDX]->contents,
-        "0x0000000000008400");
-    EXPECT_STREQ(((mpc_ast_t *)r.output)
-                     ->children[0]
-                     ->children[INSTRUCTION_IDX]
-                     ->contents,
+    EXPECT_STREQ(((mpc_ast_t *)r.output)->children[0]->children[0]->children[1]->contents, "0");
+    EXPECT_STREQ(((mpc_ast_t *)r.output)->children[0]->children[ADDRESS_IDX]->contents,
+                 "0x0000000000008400");
+    EXPECT_STREQ(((mpc_ast_t *)r.output)->children[0]->children[INSTRUCTION_IDX]->contents,
                  "0x00010117");
-    EXPECT_STREQ(((mpc_ast_t *)r.output)->children[0]->children[6]->contents,
-                 "auipc sp,      16");
+    EXPECT_STREQ(((mpc_ast_t *)r.output)->children[0]->children[6]->contents, "auipc sp,      16");
 }
 
 TEST(ParserTest, TestTrace) {
     parser_t p = parser_t();
     mpc_result_t r;
     int parsed = mpc_parse(
-        "trace",
-        "core          0: 0x0000000000008400 (0x00010117) auipc sp,      16",
-        p.trace, &r);
+        "trace", "core          0: 0x0000000000008400 (0x00010117) auipc sp,      16", p.trace, &r);
     EXPECT_TRUE(parsed);
     // TODO: flatten ast by removing unnecessary captures
-    EXPECT_STREQ(((mpc_ast_t *)r.output)->children[0]->children[1]->contents,
-                 "0");
-    EXPECT_STREQ(((mpc_ast_t *)r.output)->children[ADDRESS_IDX]->contents,
-                 "0x0000000000008400");
-    EXPECT_STREQ(((mpc_ast_t *)r.output)->children[INSTRUCTION_IDX]->contents,
-                 "0x00010117");
-    EXPECT_STREQ(((mpc_ast_t *)r.output)->children[6]->contents,
-                 "auipc sp,      16");
+    EXPECT_STREQ(((mpc_ast_t *)r.output)->children[0]->children[1]->contents, "0");
+    EXPECT_STREQ(((mpc_ast_t *)r.output)->children[ADDRESS_IDX]->contents, "0x0000000000008400");
+    EXPECT_STREQ(((mpc_ast_t *)r.output)->children[INSTRUCTION_IDX]->contents, "0x00010117");
+    EXPECT_STREQ(((mpc_ast_t *)r.output)->children[6]->contents, "auipc sp,      16");
 }
 
 TEST(ParserTest, TestCoreNum) {

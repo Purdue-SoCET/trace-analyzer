@@ -5,9 +5,8 @@
 
 // Builds the parser for instruction traces.
 parser_t::parser_t()
-    : trace_file(mpc_new("trace_file")), trace(mpc_new("trace")),
-      core_num(mpc_new("core_num")), address(mpc_new("address")),
-      instruction(mpc_new("instruction")), hex(mpc_new("hex")),
+    : trace_file(mpc_new("trace_file")), trace(mpc_new("trace")), core_num(mpc_new("core_num")),
+      address(mpc_new("address")), instruction(mpc_new("instruction")), hex(mpc_new("hex")),
       disassembly(mpc_new("disassembly")) {
 
     /* clang-format off */
@@ -29,6 +28,6 @@ parser_t::parser_t()
 }
 
 parser_t::~parser_t() {
-    mpc_cleanup(7, this->trace_file, this->trace, this->core_num, this->address,
-                this->instruction, this->hex, this->disassembly);
+    mpc_cleanup(7, this->trace_file, this->trace, this->core_num, this->address, this->instruction,
+                this->hex, this->disassembly);
 }

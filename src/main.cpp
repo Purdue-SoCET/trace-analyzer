@@ -26,24 +26,21 @@ int main(int argc, const char **argv) {
     std::vector<std::string> instrs;
     std::vector<std::string> pcs;
     std::mutex m;
-    std::for_each(
-        std::execution::par, lines.begin(), lines.end(),
-        [&](std::string_view s) {
-            mpc_result_t r;
-            if (mpc_parse("trace", s.data(), p.trace, &r)) {
-                mpc_ast_t *ast = (mpc_ast_t *)r.output;
-                {
-                    std::lock_guard lock(m);
-                    instrs.push_back(ast->children[INSTRUCTION_IDX]->contents);
-                    pcs.push_back(ast->children[ADDRESS_IDX]->contents);
-                }
-                mpc_ast_delete((mpc_ast_t *)r.output);
-            } else {
-                printf("Could not parse trace %s: %s", s.data(),
-                       mpc_err_string(r.error));
-                mpc_err_delete(r.error);
+    std::for_each(std::execution::par, lines.begin(), lines.end(), [&](std::string_view s) {
+        mpc_result_t r;
+        if (mpc_parse("trace", s.data(), p.trace, &r)) {
+            mpc_ast_t *ast = (mpc_ast_t *)r.output;
+            {
+                std::lock_guard lock(m);
+                instrs.push_back(ast->children[INSTRUCTION_IDX]->contents);
+                pcs.push_back(ast->children[ADDRESS_IDX]->contents);
             }
-        });
+            mpc_ast_delete((mpc_ast_t *)r.output);
+        } else {
+            printf("Could not parse trace %s: %s", s.data(), mpc_err_string(r.error));
+            mpc_err_delete(r.error);
+        }
+    });
     Analyzer analyzer(instrs, pcs, cli.binary_file);
     analyzer.analyze();
 

@@ -7,8 +7,9 @@
 #include <vector>
 
 /*
- * This is the main class that performs the analysis on the instructions. It uses the original ELF
- * file used to generate the trace to provide a reliable source of instructions.
+ * This is the main class that performs the analysis on the instructions. It
+ * uses the original ELF file used to generate the trace to provide a reliable
+ * source of instructions.
  */
 class Analyzer {
     typedef struct {
@@ -34,9 +35,10 @@ class Analyzer {
     statistics stats;
 
     // Initialize an analyzer with a set of instructions and PC values
-    // std::vector<std::string> instr: instruction to be parsed into an internal Instruction type
-    // std::vector<std::string> pc: program counter associated with the instruction
-    // const char *filename: the path to the binary file used to generate
+    // std::vector<std::string> instr: instruction to be parsed into an internal
+    // Instruction type std::vector<std::string> pc: program counter associated
+    // with the instruction const char *filename: the path to the binary file
+    // used to generate
     Analyzer(std::vector<std::string> instr, std::vector<std::string> pc, const char *filename);
     // Prints statistics as a table
     void displayStatistics();

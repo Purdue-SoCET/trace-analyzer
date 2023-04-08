@@ -13,8 +13,8 @@
 #include <llvm/MC/TargetRegistry.h>
 #include <llvm/Support/TargetSelect.h>
 
-Analyzer::Analyzer(std::vector<std::string> instrs,
-                   std::vector<std::string> pcs, const char *filename)
+Analyzer::Analyzer(std::vector<std::string> instrs, std::vector<std::string> pcs,
+                   const char *filename)
     : Obj(filename), stats({0}) {
     assert(instrs.size() == pcs.size());
     auto n = instrs.size();
@@ -42,8 +42,7 @@ Analyzer::Analyzer(std::vector<std::string> instrs,
 bool Analyzer::analyze() {
     llvm::Triple triple = this->Obj.getTriple();
     std::string error;
-    const llvm::Target *target =
-        llvm::TargetRegistry::lookupTarget("riscv32", triple, error);
+    const llvm::Target *target = llvm::TargetRegistry::lookupTarget("riscv32", triple, error);
     if (!target) {
         fprintf(stderr, "Failed to create target: %s\n", error.c_str());
         return false;
@@ -57,13 +56,11 @@ bool Analyzer::analyze() {
     }
     std::unique_ptr<llvm::MCSubtargetInfo> sti(
         target->createMCSubtargetInfo(triple.getTriple(), "", stf.getString()));
-    std::unique_ptr<llvm::MCRegisterInfo> mri(
-        target->createMCRegInfo(triple.getTriple()));
-    std::unique_ptr<llvm::MCAsmInfo> mai(target->createMCAsmInfo(
-        *mri, triple.getTriple(), llvm::MCTargetOptions()));
+    std::unique_ptr<llvm::MCRegisterInfo> mri(target->createMCRegInfo(triple.getTriple()));
+    std::unique_ptr<llvm::MCAsmInfo> mai(
+        target->createMCAsmInfo(*mri, triple.getTriple(), llvm::MCTargetOptions()));
     llvm::MCContext ctx(triple, mai.get(), mri.get(), sti.get());
-    std::unique_ptr<llvm::MCDisassembler> disasm(
-        target->createMCDisassembler(*sti, ctx));
+    std::unique_ptr<llvm::MCDisassembler> disasm(target->createMCDisassembler(*sti, ctx));
 
     // Disassemble by PC
     auto bytes = static_cast<llvm::ArrayRef<uint8_t>>(this->Obj);
@@ -72,8 +69,7 @@ bool Analyzer::analyze() {
         llvm::MCInst Inst;
         uint64_t size = 0;
         auto len = (pc + 4 > bytes.size()) ? bytes.size() - pc : 4;
-        switch (disasm->getInstruction(Inst, size, bytes.slice(pc, len), pc,
-                                       llvm::nulls())) {
+        switch (disasm->getInstruction(Inst, size, bytes.slice(pc, len), pc, llvm::nulls())) {
         case llvm::MCDisassembler::SoftFail:
         case llvm::MCDisassembler::Fail:
             fprintf(stderr, "MCDisassembler failed!\n");
@@ -221,8 +217,8 @@ bool Analyzer::analyze() {
             this->stats.system++;
             break;
         default:
-            printf("Unknown instruction: %s (Opcode %d)\n",
-                   info->getName(I.getOpcode()).data(), opcode);
+            printf("Unknown instruction: %s (Opcode %d)\n", info->getName(I.getOpcode()).data(),
+                   opcode);
             break;
         }
     }
@@ -237,8 +233,7 @@ void Analyzer::displayStatistics() {
     auto call = this->stats.call;
     auto muldiv = this->stats.muldiv;
     auto system = this->stats.system;
-    float total =
-        std::max<std::size_t>(1, alu + mem + branch + call + muldiv + system);
+    float total = std::max<std::size_t>(1, alu + mem + branch + call + muldiv + system);
     printf("Statistics\n"
            "=========================\n"
            "Type         Count      %%\n"
@@ -249,9 +244,8 @@ void Analyzer::displayStatistics() {
            "Call: %11lu  %5.2f%%\n"
            "Mul/Div: %8lu  %5.2f%%\n"
            "System: %9lu  %5.2f%%\n",
-           alu, 100 * alu / total, mem, 100 * mem / total, branch,
-           100 * branch / total, call, 100 * call / total, muldiv,
-           100 * muldiv / total, system, 100 * system / total);
+           alu, 100 * alu / total, mem, 100 * mem / total, branch, 100 * branch / total, call,
+           100 * call / total, muldiv, 100 * muldiv / total, system, 100 * system / total);
 }
 
 void Analyzer::displayStatisticsJson() {
@@ -284,11 +278,10 @@ void Analyzer::displayStatisticsMatlab() {
     auto muldiv = this->stats.muldiv;
     auto system = this->stats.system;
     auto total = alu + mem + branch + call + muldiv + system;
-    printf(
-        "instr_count = [%lu, %lu, %lu, %lu, %lu, %lu];\n"
-        "instr_labels = {'alu', 'mem', 'branch', 'call', 'muldiv', 'system'};\n"
-        "total = %lu;\n",
-        alu, mem, branch, call, muldiv, system, total);
+    printf("instr_count = [%lu, %lu, %lu, %lu, %lu, %lu];\n"
+           "instr_labels = {'alu', 'mem', 'branch', 'call', 'muldiv', 'system'};\n"
+           "total = %lu;\n",
+           alu, mem, branch, call, muldiv, system, total);
 }
 
 void Analyzer::displayExtension() {
@@ -303,6 +296,5 @@ void Analyzer::displayExtension() {
            "rv32i: %12lu  %5.2f%%\n"
            "rv32m: %12lu  %5.2f%%\n"
            "rv32c: %12lu  %5.2f%%\n",
-           rv32i, 100 * rv32i / total, rv32m, 100 * rv32m / total, rv32c,
-           100 * rv32c / total);
+           rv32i, 100 * rv32i / total, rv32m, 100 * rv32m / total, rv32c, 100 * rv32c / total);
 }
