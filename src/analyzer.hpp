@@ -35,10 +35,10 @@ class Analyzer {
     statistics stats;
 
     // Initialize an analyzer with a set of instructions and PC values
-    // std::vector<std::string> instr: instruction to be parsed into an internal
-    // Instruction type std::vector<std::string> pc: program counter associated
-    // with the instruction const char *filename: the path to the binary file
-    // used to generate
+    // @param std::vector<std::string> instr: instruction to be parsed into an internal Instruction
+    // type
+    // @param std::vector<std::string> pc: program counter associated with the instruction
+    // @param const char *filename: the path to the binary file used to generate
     Analyzer(std::vector<std::string> instr, std::vector<std::string> pc, const char *filename);
     // Prints statistics as a table
     void displayStatistics();

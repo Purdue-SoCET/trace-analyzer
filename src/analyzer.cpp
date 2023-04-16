@@ -49,11 +49,7 @@ bool Analyzer::analyze() {
     }
 
     // Set up LLVM infrastructure for diassembly
-    // TODO: make this more robust
-    llvm::SubtargetFeatures stf;
-    for (auto F : std::string("mvc")) {
-        stf.AddFeature(llvm::StringRef(&F, 1));
-    }
+    llvm::SubtargetFeatures stf = this->Obj.getFeatures();
     std::unique_ptr<llvm::MCSubtargetInfo> sti(
         target->createMCSubtargetInfo(triple.getTriple(), "", stf.getString()));
     std::unique_ptr<llvm::MCRegisterInfo> mri(target->createMCRegInfo(triple.getTriple()));

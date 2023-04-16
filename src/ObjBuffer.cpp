@@ -51,6 +51,10 @@ llvm::object::ELF32LEFile::Elf_Shdr ObjBuffer::initTextShdr(ELF32LEFile Elf) {
     return Text;
 }
 
+llvm::SubtargetFeatures ObjBuffer::getFeatures() {
+    return this->Obj.getBinary()->getFeatures();
+}
+
 llvm::Triple ObjBuffer::getTriple() {
     return this->Obj.getBinary()->makeTriple();
 }

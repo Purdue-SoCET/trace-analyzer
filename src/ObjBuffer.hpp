@@ -26,6 +26,8 @@ class ObjBuffer {
     llvm::Triple getTriple();
     // const char *filename: path to binary file
     ObjBuffer(const char *filename);
+    // Decodes Tag_RISCV_arch from the ELF
+    llvm::SubtargetFeatures getFeatures();
 
     // Operator to access the internals of the binary as an ArrayRef
     operator llvm::ArrayRef<uint8_t>();
